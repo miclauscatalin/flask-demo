@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block content %}
+
+  <div class="page-head">
+    <div>
+      <h2>My Tasks</h2>
+      <p class="subtitle">Quick overview + fast actions. Built for demo & deploy.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <h3 class="card-title">Add task</h3>
+      <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="row">
+          {{ form.title(class_="input", placeholder="e.g. Prepare interview demo") }}
+          {{ form.submit(class_="btn") }}
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div style="flex:1; min-width:240px;">
+            <label class="muted">Due</label>
+            {{ form.due_at(class_="input") }}
+          </div>
+
+          <div style="flex:1; min-width:240px;">
+            <label class="muted">Remind at</label>
+            {{ form.remind_at(class_="input") }}
+          </div>
+
+          <label class="check" style="min-width:160px;">
+            {{ form.remind_email() }} <span>{{ form.remind_email.label.text }}</span>
+          </label>
+        </div>
+      </form>
+
+      <div class="search-row">
+        <input id="taskSearch" class="input" placeholder="Search tasks..." />
+      </div>
+    </section>
+
+    <section class="card">
+      <h3 class="card-title">Summary</h3>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-k">{{ total }}</div>
+          <div class="stat-l">Total</div>
+        </div>
+        <div class="stat">
+          <div class="stat-k">{{ open_count }}</div>
+          <div class="stat-l">Open</div>
+        </div>
+        <div class="stat">
+          <div class="stat-k">{{ done_count }}</div>
+          <div class="stat-l">Done</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span>Completion</span>
+          <span class="muted">{{ progress }}%</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" style="width: {{ progress }}%"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <ul class="list" id="taskList">
+    {% for t in tasks %}
+      <li class="item" data-title="{{ t.title|lower }}">
+        <div class="left">
+          <a class="toggle" href="{{ url_for('toggle_task', task_id=t.id) }}" title="Toggle done">
+            {% if t.done %}✅{% else %}⬜{% endif %}
+          </a>
+
+          <div class="text {% if t.done %}done{% endif %}">
+            <div class="task-title">{{ t.title }}</div>
+            <div class="meta">{{ t.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+          </div>
+        </div>
+
+        <div class="right">
+          <a class="btn outline" href="{{ url_for('task_ics', task_id=t.id) }}">Add to Calendar</a>
+          <a class="danger"
+             href="{{ url_for('delete_task', task_id=t.id) }}"
+             data-confirm="Delete this task?">
+             Delete
+          </a>
+        </div>
+      </li>
+    {% else %}
+      <li class="empty">
+        <div class="empty-card">
+          <div class="empty-emoji">📝</div>
+          <div>
+            <div class="empty-title">No tasks yet</div>
+            <div class="empty-sub">Add your first task above. This app supports per-user tasks & CRUD.</div>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

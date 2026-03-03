@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+  <h1>Demo App ✅</h1>
+  <p>Un proiect mic pentru interviu: autentificare + CRUD + deploy.</p>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('login') }}">Login</a>
+    <a class="btn outline" href="{{ url_for('register') }}">Register</a>
+  </div>
+{% endblock %}

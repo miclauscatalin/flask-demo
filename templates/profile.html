@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Profile Settings{% endblock %}
+{% block content %}
+
+  <div class="page-head">
+    <div>
+      <h2>Profile Settings</h2>
+      <p class="subtitle">Configure your notification preferences and account settings.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <h3 class="card-title">Notification Settings</h3>
+      <form method="post">
+        {{ form.hidden_tag() }}
+        
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">Notification Email</label>
+          {{ form.notification_email(class_="input", placeholder="your.email@example.com") }}
+          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+            Email address where you'll receive task reminders. Leave empty to disable email notifications.
+          </small>
+        </div>
+
+        <div class="row">
+          {{ form.submit(class_="btn") }}
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h3 class="card-title">Account Info</h3>
+      
+      <div style="padding: 12px 0;">
+        <div style="marginBottom: 10px;">
+          <span class="muted">Username:</span>
+          <strong>{{ current_user.username }}</strong>
+        </div>
+        
+        <div style="marginBottom: 10px;">
+          <span class="muted">Member since:</span>
+          {{ current_user.created_at.strftime("%B %d, %Y") }}
+        </div>
+
+        <div style="marginBottom: 10px;">
+          <span class="muted">Current notification email:</span>
+          {% if current_user.notification_email %}
+            <span style="color: var(--ok);">{{ current_user.notification_email }}</span>
+          {% else %}
+            <span style="color: var(--muted);">Not set</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div style="padding: 12px; border-radius: 12px; border: 1px solid rgba(96,165,250,.3); background: rgba(96,165,250,.08); margin-top: 14px;">
+        <div style="font-size: 13px; color: rgba(255,255,255,.75);">
+          <strong>💡 Tip:</strong> Set your notification email to receive automatic reminders for tasks with due dates.
+        </div>
+      </div>
+    </section>
+  </div>
+
+{% endblock %}

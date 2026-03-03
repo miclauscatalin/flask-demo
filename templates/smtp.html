@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}SMTP Settings{% endblock %}
+{% block content %}
+
+  <div class="page-head">
+    <div>
+      <h2>SMTP Settings</h2>
+      <p class="subtitle">Configure Brevo email settings for task reminders.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <h3 class="card-title">SMTP Configuration</h3>
+      <form method="post">
+        {{ form.hidden_tag() }}
+        
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Host</label>
+          {{ form.smtp_host(class_="input", placeholder="smtp-relay.brevo.com") }}
+          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+            Your SMTP server (e.g., smtp-relay.brevo.com for Brevo)
+          </small>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Port</label>
+          {{ form.smtp_port(class_="input", placeholder="587") }}
+          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+            Usually 587 (TLS) or 465 (SSL)
+          </small>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Username</label>
+          {{ form.smtp_username(class_="input", placeholder="your.email@brevo.com") }}
+          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+            SMTP username (usually your email)
+          </small>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Password</label>
+          {{ form.smtp_password(class_="input", placeholder="Your SMTP password/key", type="password") }}
+          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+            SMTP key or password from your email provider
+          </small>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">Sender Email</label>
+          {{ form.sender_email(class_="input", placeholder="noreply@yourdomain.com") }}
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">Sender Name</label>
+          {{ form.sender_name(class_="input", placeholder="Task Demo") }}
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label class="muted" style="display: block; margin-bottom: 6px;">Test Email</label>
+          {{ form.test_email(class_="input", placeholder="your.email@example.com") }}
+          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+            Email address for testing (optional)
+          </small>
+        </div>
+
+        <div class="row">
+          {{ form.submit(class_="btn") }}
+          <button type="button" class="btn outline" onclick="testSMTP()">Test Connection</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h3 class="card-title">Setup Instructions</h3>
+      
+      <div style="padding: 12px 0;">
+        <div style="margin-bottom: 16px;">
+          <div style="font-weight: 700; margin-bottom: 6px;">1. Get Brevo SMTP Credentials</div>
+          <div class="muted" style="font-size: 14px; line-height: 1.4;">
+            • Login to <a href="https://app.brevo.com" target="_blank" style="color: var(--brand);">Brevo Dashboard</a><br>
+            • Go to Account → SMTP & API<br>
+            • In "Your SMTP Settings" find:<br>
+            &nbsp;&nbsp;- SMTP Server<br>
+            &nbsp;&nbsp;- Port (usually 587)<br>
+            &nbsp;&nbsp;- Login (SMTP username)<br>
+            &nbsp;&nbsp;- Generate an SMTP key for password
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <div style="font-weight: 700; margin-bottom: 6px;">2. SMTP Credentials Summary</div>
+          <div class="muted" style="font-size: 14px; line-height: 1.4;">
+            <strong>For Brevo:</strong><br>
+            Host: <code>smtp-relay.brevo.com</code><br>
+            Port: <code>587</code><br>
+            Username: Your Brevo login email<br>
+            Password: SMTP key (from SMTP settings)
+          </div>
+        </div>
+
+        <div>
+          <div style="font-weight: 700; margin-bottom: 6px;">3. Current Status</div>
+          {% if settings and settings.smtp_host and settings.smtp_username %}
+            <span style="color: var(--ok);">✅ SMTP Configured</span><br>
+            <span class="muted" style="font-size: 12px;">{{ settings.smtp_host }}:{{ settings.smtp_port }} as {{ settings.smtp_username }}</span><br>
+            <span class="muted" style="font-size: 12px;">Last updated: {{ settings.updated_at.strftime("%Y-%m-%d %H:%M") }}</span>
+          {% else %}
+            <span style="color: var(--err);">❌ SMTP Not Configured</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div style="padding: 12px; border-radius: 12px; border: 1px solid rgba(239,68,68,.3); background: rgba(239,68,68,.08); margin-top: 14px;">
+        <div style="font-size: 13px; color: rgba(255,255,255,.75);">
+          <strong>🔐 Security:</strong> Passwords are stored securely. Never share your SMTP credentials.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function testSMTP() {
+      fetch('/test-smtp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('✅ Test email sent successfully!');
+        } else {
+          alert('❌ Error: ' + (data.error || 'Failed to send test email'));
+        }
+      })
+      .catch(error => {
+        alert('❌ Connection error: ' + error.message);
+      });
+    }
+  </script>
+
+{% endblock %}
