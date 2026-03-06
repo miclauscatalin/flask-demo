@@ -78,6 +78,7 @@
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
       line-height: 1.65;
+      position: relative;  /* necesar pentru fundalul dinamic (::before absolute) */
     }
 
     /* ─────────────────────────────────────────────
@@ -86,8 +87,9 @@
     ───────────────────────────────────────────── */
     body::before {
       content: '';
-      position: fixed;
+      position: absolute;   /* absolute = crește odată cu conținutul paginii */
       inset: 0;
+      min-height: 100%;     /* acoperă tot, inclusiv sub fold */
       z-index: 0;
       background-image: radial-gradient(circle, #c7d2f5 1px, transparent 1px);
       background-size: 28px 28px;
@@ -119,74 +121,77 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 68px;
+      height: 90px;
       padding: 0 clamp(1rem, 4vw, 2.5rem);
       background: var(--surface);
       border-bottom: 1.5px solid var(--border);
       box-shadow: var(--shadow-sm);
     }
 
-    /* brand — logo SVG inline, fără fișiere externe */
+    /* brand */
     .brand {
       display: flex;
       align-items: center;
+      gap: .65rem;
       text-decoration: none;
       user-select: none;
+    }
+
+    .brand-icon {
+      width: 80px; height: 80px;
+      border-radius: 18px;
+      background: none;
+      display: grid;
+      place-items: center;
       flex-shrink: 0;
     }
+
+    .brand-icon svg { display: block; }
 
     /* modern text-based logo */
     .logo-modern {
       display: flex;
+      flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: .8rem;
-      height: 60px;
-      width: 180px;
+      gap: .4rem;
+      height: 50px;
+      width: auto;
+      padding: 0 1.2rem;
       border-radius: 12px;
       background: transparent;
       transition: transform .15s ease;
     }
 
-    .logo-icon {
-      font-size: 1.8rem;
-      filter: drop-shadow(0 2px 4px rgba(67,97,238,.2));
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-3px); }
-    }
-
-    .logo-text-container {
-      display: flex;
-      align-items: center;
-      gap: .4rem;
-    }
-
     .logo-modern:hover {
-      transform: translateY(-2px);
+      transform: scale(1.05);
     }
 
     .logo-text,
     .logo-accent {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       line-height: 1;
       letter-spacing: -.03em;
-      color: var(--text);
+      text-align: center;
     }
 
     .logo-text {
-      margin-right: 0;
+      color: var(--accent);
     }
 
     .logo-accent {
-      color: var(--accent);
+      color: var(--accent-2);
       font-weight: 700;
     }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.02em;
     }
 
     /* linkuri */
@@ -233,6 +238,42 @@
       background: var(--border-2);
       margin: 0 .4rem;
       flex-shrink: 0;
+    }
+
+    /* ─────────────────────────────────────────────
+       Language switcher
+    ───────────────────────────────────────────── */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: .25rem;
+      margin-left: .65rem;
+      padding-left: .65rem;
+      border-left: 1.5px solid var(--border-2);
+    }
+
+    .lang-btn {
+      font-size: 1.18rem;
+      background: none;
+      border: 2px solid transparent;
+      border-radius: var(--radius-xs);
+      padding: .15rem .22rem;
+      cursor: pointer;
+      opacity: .48;
+      transition: opacity .15s, border-color .15s, transform .12s;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .lang-btn:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    .lang-btn.active {
+      opacity: 1;
+      border-color: var(--accent);
+      background: var(--accent-light);
     }
 
     /* pilula username */
@@ -438,6 +479,15 @@
       text-decoration: none;
       transition: background .15s, transform .13s, box-shadow .15s;
       line-height: 1;
+      /* implicit = primar albastru */
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(67,97,238,.3);
+    }
+    .btn:hover:not(.outline) {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(67,97,238,.4);
     }
 
     .btn-primary {
@@ -531,12 +581,247 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
     /* ─────────────────────────────────────────────
+       Alias-uri compatibilitate (variabile vechi → noi)
+    ───────────────────────────────────────────── */
+    :root {
+      --muted:   var(--text-3);
+      --ok:      var(--green);
+      --err:     var(--red);
+      --brand:   var(--accent);
+    }
+
+    /* clasa utilitară .muted */
+    .muted { color: var(--text-3) !important; }
+
+    /* .btn.outline → stilul secundar */
+    .btn.outline {
+      background: var(--surface);
+      color: var(--text-2);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn.outline:hover {
+      background: var(--accent-light);
+      color: var(--accent);
+      border-color: #b6c4f5;
+    }
+
+    /* link de ștergere */
+    .danger {
+      font-size: .875rem;
+      font-weight: 500;
+      color: var(--red);
+      text-decoration: none;
+      padding: .3rem .5rem;
+      border-radius: var(--radius-xs);
+      transition: background .15s;
+    }
+    .danger:hover { background: var(--red-bg); }
+
+    /* grid 2 coloane responsive */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* rând flex */
+    .row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+
+    /* header pagină */
+    .page-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .page-head h2 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+    .subtitle { font-size: .9rem; color: var(--text-3); margin-top: .25rem; }
+
+    /* checkbox stilizat */
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .875rem;
+      color: var(--text-2);
+      cursor: pointer;
+      user-select: none;
+    }
+    .check input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
+
+    /* input căutare */
+    .search-row { margin-top: 1rem; }
+
+    /* ── statistici ── */
+    .stats {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin: .75rem 0;
+    }
+    .stat { text-align: center; }
+    .stat-k {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-l { font-size: .75rem; color: var(--text-3); margin-top: .2rem; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ── progress bar ── */
+    .progress-wrap { margin-top: 1rem; }
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: .8rem;
+      color: var(--text-3);
+      margin-bottom: .35rem;
+    }
+    .progress {
+      height: 7px;
+      background: var(--border-2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 99px;
+      transition: width .5s ease;
+    }
+
+    /* ── lista de taskuri ── */
+    .list { list-style: none; display: flex; flex-direction: column; gap: .6rem; margin-top: 1rem; }
+
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .75rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border-2);
+      border-radius: var(--radius-sm);
+      padding: .85rem 1.1rem;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .item:hover { border-color: #b6c4f5; box-shadow: var(--shadow-sm); }
+
+    .item .left  { display: flex; align-items: center; gap: .75rem; flex: 1; min-width: 0; }
+    .item .right { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; flex-wrap: wrap; }
+
+    .toggle {
+      font-size: 1.2rem;
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: transform .15s;
+    }
+    .toggle:hover { transform: scale(1.15); }
+
+    .text { min-width: 0; }
+    .task-title {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .meta { font-size: .78rem; color: var(--text-3); margin-top: .18rem; }
+
+    .text.done .task-title {
+      text-decoration: line-through;
+      color: var(--text-3);
+    }
+
+    /* ── empty state ── */
+    .empty { list-style: none; }
+    .empty-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--surface-2);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+    .empty-emoji { font-size: 2.5rem; }
+    .empty-title { font-weight: 700; color: var(--text-2); }
+    .empty-sub   { font-size: .85rem; color: var(--text-3); margin-top: .2rem; }
+
+    /* ─────────────────────────────────────────────
        Responsive
     ───────────────────────────────────────────── */
     @media (max-width: 640px) {
       .links a:not(.cta) { display: none; }
       .nav-divider        { display: none; }
     }
+
+    /* ─────────────────────────────────────────────
+       Lightbox
+    ───────────────────────────────────────────── */
+    #lb-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,.82);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #lb-overlay.open { display: flex; }
+    #lb-overlay img {
+      max-width: 92vw;
+      max-height: 92vh;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 48px rgba(0,0,0,.6);
+      object-fit: contain;
+      cursor: default;
+      animation: lbIn .18s ease;
+    }
+    @keyframes lbIn {
+      from { opacity:0; transform: scale(.94); }
+      to   { opacity:1; transform: scale(1); }
+    }
+    #lb-close {
+      position: fixed;
+      top: 1rem; right: 1.25rem;
+      font-size: 1.8rem;
+      color: #fff;
+      cursor: pointer;
+      line-height: 1;
+      opacity: .8;
+      transition: opacity .15s;
+    }
+    #lb-close:hover { opacity: 1; }
+
+    /* thumb-uri imagini task */
+    .task-thumbs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .task-thumb {
+      width: 52px; height: 52px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      cursor: zoom-in;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .task-thumb:hover { transform: scale(1.06); box-shadow: var(--shadow-md); }
   </style>
 </head>
 <body>
@@ -546,15 +831,11 @@
   ════════════════════════════════════ -->
   <header class="nav">
 
-    <!-- Logo SVG inline — fără fișiere externe, fără Bootstrap -->
     <a class="brand" href="/">
       <div class="brand-icon">
         <div class="logo-modern">
-          <div class="logo-icon">📋</div>
-          <div class="logo-text-container">
-            <span class="logo-text">Task</span>
-            <span class="logo-accent">Organizer</span>
-          </div>
+          <span class="logo-text">Task</span>
+          <span class="logo-accent">Organizer</span>
         </div>
       </div>
     </a>
@@ -571,16 +852,24 @@
 
         <div class="nav-divider"></div>
 
-        <a href="{{ url_for('tasks') }}">Tasks</a>
-        <a href="{{ url_for('profile') }}">Profile</a>
-        <a href="{{ url_for('smtp_settings') }}">SMTP</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('tasks') }}" data-i18n="nav_tasks">Activități</a>
+        <a href="{{ url_for('profile') }}" data-i18n="nav_profile">Profil</a>
+        <a href="{{ url_for('smtp_settings') }}" data-i18n="nav_smtp">SMTP</a>
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin_dashboard') }}" style="color:var(--amber);">&#9881; <span data-i18n="nav_admin">Admin</span></a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" data-i18n="nav_logout">Deconectare</a>
 
       {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-        <a class="cta" href="{{ url_for('register') }}">Register</a>
+        {# Userul neautentificat nu vede linkuri în navbar; se autentifică din pagina /login #}
+        {# Unauthenticated user sees no nav links; they log in from the /login page #}
       {% endif %}
     </nav>
+
+    <div class="lang-switcher">
+      <button class="lang-btn" data-lang="ro" onclick="applyLanguage('ro')" title="Română">🇷🇴</button>
+      <button class="lang-btn" data-lang="en" onclick="applyLanguage('en')" title="English">🇬🇧</button>
+    </div>
 
   </header>
 
@@ -613,10 +902,19 @@
   </main>
 
   <!-- ════════════════════════════════════
-       Footer
+       Footer — ATRIBUIRE / ATTRIBUTION
+       NU șterge acest bloc. Dacă clonezi
+       proiectul, păstrează creditul autorului.
+       Do NOT remove. Keep author credit.
   ════════════════════════════════════ -->
-  <footer>
-    Task Tracker &mdash; built with <strong>Flask</strong> &amp; Python
+  <footer data-attribution="MiclausCatalin">
+    <div data-i18n-html="footer_line1">Task Tracker &mdash; construit cu <strong>Flask</strong> &amp; Python</div>
+    <div style="margin-top:.38rem; font-size:.73rem;">
+      Dev <strong style="color:var(--accent);">MiclausCatalin</strong>
+      &middot; contact @
+      <a href="mailto:miclaus.catalin@gmail.com" style="color:var(--accent);text-decoration:none;">miclaus.catalin@gmail.com</a>
+    </div>
+    <!-- github.com/MiclausCatalin — flask-task-tracker -->
   </footer>
 
   <script src="{{ url_for('static', filename='app.js') }}"></script>
@@ -631,6 +929,298 @@
         setTimeout(() => el.remove(), 320);
       }, 5000 + i * 300);
     });
+  </script>
+
+  <!-- ════════════════════════════════════
+       Bilingual i18n — RO / EN
+  ════════════════════════════════════ -->
+  <script>
+    const i18n = {
+      ro: {
+        /* navbar */
+        nav_tasks:   'Activități',
+        nav_profile: 'Profil',
+        nav_smtp:    'SMTP',
+        nav_admin:   'Admin',
+        nav_login:   'Login',
+        nav_register:'Înregistrare',
+        nav_logout:  'Deconectare',
+        /* footer */
+        footer_line1: 'Task Tracker &mdash; construit cu <strong>Flask</strong> &amp; Python',
+        /* index */
+        index_title:     'Task Organizer 📋',
+        index_desc:      'Organizează-ți sarcinile, primeşte memento-uri pe email şi colaborează eficient.',
+        index_login_btn: 'Autentificare',
+        index_reg_btn:   'Înregistrare',
+        /* login */
+        login_title:  'Autentificare',
+        login_create: 'Creează cont',
+        /* register */
+        reg_title:      'Creează cont',
+        reg_have_acc:   'Am deja un cont',
+        reg_email_lbl:  'Email',
+        reg_email_hint: 'Folosit pentru codul 2FA la fiecare autentificare.',
+        /* login extras */
+        login_forgot:   'Am uitat parola',
+        /* 2FA */
+        twofa_title:    'Verificare în doi pași',
+        twofa_hint:     'Ți-am trimis un cod de 6 cifre pe email. Introdu-l mai jos.',
+        twofa_back:     '← Înapoi',
+        /* forgot password */
+        forgot_title:   'Am uitat parola',
+        forgot_hint:    'Introdu username-ul tău. Dacă ai un email setat, îți trimitem un cod de resetare.',
+        forgot_back:    '← Login',
+        /* reset password */
+        reset_title:    'Parolă nouă',
+        reset_hint:     'Introdu codul primit pe email și noua ta parolă.',
+        reset_back:     '← Retreimitere cod',
+        /* tasks */
+        tasks_title:       'Sarcinile mele',
+        tasks_subtitle:    'Prezentare generală + acțiuni rapide. Creat pentru demo &amp; deploy.',
+        tasks_how_title:   'Cum funcționează',
+        tasks_how_body:    '- Completezi adresa de email în <em>Profil</em> (obligatoriu) pentru a primi memento-uri.<br>- Poți adăuga sarcini, seta data scadenței și când să te anunțăm.<br>- Linkul <em>SMTP</em> este vizibil pentru toți; doar <em>admin</em> poate salva setările reale.<br>- Dacă ești user și dai click pe <em>SMTP</em>, vei vedea instrucțiuni — nu vei vedea valorile puse de admin.',
+        tasks_add_title:   'Adaugă sarcină',
+        tasks_due_label:   'Scadent',
+        tasks_remind_label:'Amintire la',
+        tasks_search_ph:   'Caută sarcini...',
+        tasks_summary:     'Rezumat',
+        tasks_total:       'Total',
+        tasks_open:        'Deschise',
+        tasks_done:        'Finalizate',
+        tasks_completion:  'Progres',
+        tasks_edit_btn:    'Editează',
+        tasks_cal_btn:     'Calendar',
+        tasks_empty_title: 'Nicio sarcină încă',
+        tasks_empty_sub:   'Adaugă prima ta sarcină mai sus. Aplicația suportă sarcini CRUD per utilizator.',
+        tasks_img_lbl:     'Imagine / Screenshot (opțional)',
+        tasks_paste_hint:  '📋 Click aici, apoi <strong>Ctrl+V</strong> — lipești captura din clipboard',
+        tasks_or_file:     'sau alege fișier manual:',
+        /* profile */
+        profile_title:         'Setări Profil',
+        profile_subtitle:      'Configurează preferințele de notificare și setările contului.',
+        profile_notif_title:   'Setări Notificări',
+        profile_email_lbl:     'Email Notificări',
+        profile_email_hint:    'Adresa de email unde vei primi memento-uri pentru sarcini.',
+        profile_account_title: 'Info Cont',
+        profile_username_lbl:  'Utilizator:',
+        profile_member_lbl:    'Membru din:',
+        profile_cur_email_lbl: 'Email notificări curent:',
+        profile_not_set:       'Nesetat',
+        profile_tip:           '💡 Sfat: Setează emailul pentru a primi remindere automate pentru sarcini cu termene.',
+        /* smtp */
+        smtp_title:        'Setări SMTP',
+        smtp_subtitle:     'Configurare Brevo pentru memento-uri email.',
+        smtp_config_title: 'Configurare SMTP',
+        smtp_user_note:    'Vizualizare instrucțiuni doar — contactează adminul pentru date reale.',
+        smtp_info_title:   'Instrucțiuni Brevo SMTP',
+        smtp_security:     '🔐 Securitate: parolele sunt stocate securizat. Nu partaja credențialele SMTP.',
+        /* admin */
+        admin_title:       'Panou Admin',
+        admin_subtitle:    'Gestionez utilizatorii și sarcinile din aplicație.',
+        admin_users_sec:   'Utilizatori',
+        admin_tasks_sec:   'Toate sarcinile',
+        admin_th_username: 'Utilizator',
+        admin_th_email:    'Email notificări',
+        admin_th_role:     'Rol',
+        admin_th_reg:      'Înregistrat',
+        admin_th_tasks:    'Sarcini',
+        admin_th_actions:  'Acțiuni',
+        admin_th_owner:    'Proprietar',
+        admin_th_title:    'Titlu',
+        admin_th_status:   'Status',
+        admin_th_date:     'Data',
+        admin_you:         'Tu',
+        admin_admins:      'Admini',
+        admin_users_lbl:   'Useri',
+        admin_solved:      'Rezolvate',
+        admin_open:        'Deschise',
+        admin_toggle:      'Schimbă rol',
+        admin_delete:      'Șterge',
+        admin_edit:        'Editează',
+        admin_no_del:      'Nu te poți șterge',
+        admin_tasks_lbl:   'Sarcini',
+        /* task edit */
+        tedit_title:    'Editez sarcina',
+        tedit_subtitle: 'Modific titlul, notele, data scadenței sau adaug o imagine.',
+        tedit_back:     '← Înapoi la sarcini',
+        tedit_details:  'Detalii',
+        tedit_tit_lbl:  'Titlu',
+        tedit_notes_lbl:'Note',
+        tedit_due_lbl:  'Scadent la',
+        tedit_remind_lbl:'Reamintire la',
+        tedit_img_lbl:  'Imagine / Screenshot',
+        tedit_paste:    '📋 Click aici, apoi apasă <strong>Ctrl+V</strong> pentru a lipi captura din clipboard',
+        tedit_orfile:   'sau alege fiśier manual:',
+        tedit_preview:  'Previzualizare',
+      },
+      en: {
+        /* navbar */
+        nav_tasks:   'Tasks',
+        nav_profile: 'Profile',
+        nav_smtp:    'SMTP',
+        nav_admin:   'Admin',
+        nav_login:   'Login',
+        nav_register:'Register',
+        nav_logout:  'Logout',
+        /* footer */
+        footer_line1: 'Task Tracker &mdash; built with <strong>Flask</strong> &amp; Python',
+        /* index */
+        index_title:     'Task Organizer 📋',
+        index_desc:      'Organize your tasks, receive email reminders and stay on top of your work.',
+        index_login_btn: 'Login',
+        index_reg_btn:   'Register',
+        /* login */
+        login_title:  'Login',
+        login_create: 'Create account',
+        /* register */
+        reg_title:      'Create account',
+        reg_have_acc:   'I already have an account',
+        reg_email_lbl:  'Email',
+        reg_email_hint: 'Used for the 2FA code on every login.',
+        /* login extras */
+        login_forgot:   'Forgot password',
+        /* 2FA */
+        twofa_title:    'Two-step verification',
+        twofa_hint:     'We sent a 6-digit code to your email. Enter it below.',
+        twofa_back:     '← Back',
+        /* forgot password */
+        forgot_title:   'Forgot password',
+        forgot_hint:    'Enter your username. If you have an email set, we will send you a reset code.',
+        forgot_back:    '← Login',
+        /* reset password */
+        reset_title:    'New password',
+        reset_hint:     'Enter the code you received by email and your new password.',
+        reset_back:     '← Resend code',
+        /* tasks */
+        tasks_title:       'My Tasks',
+        tasks_subtitle:    'Quick overview + fast actions. Built for demo &amp; deploy.',
+        tasks_how_title:   'How it works',
+        tasks_how_body:    '- Fill in your email in <em>Profile</em> (required) to receive reminders.<br>- Add tasks, set due dates, and when to notify you.<br>- The <em>SMTP</em> link is visible to everyone; only <em>admin</em> can save real settings.<br>- If you\'re a regular user and click <em>SMTP</em>, you\'ll see instructions — not the admin\'s values.',
+        tasks_add_title:   'Add task',
+        tasks_due_label:   'Due',
+        tasks_remind_label:'Remind at',
+        tasks_search_ph:   'Search tasks...',
+        tasks_summary:     'Summary',
+        tasks_total:       'Total',
+        tasks_open:        'Open',
+        tasks_done:        'Done',
+        tasks_completion:  'Completion',
+        tasks_edit_btn:    'Edit',
+        tasks_cal_btn:     'Calendar',
+        tasks_empty_title: 'No tasks yet',
+        tasks_empty_sub:   'Add your first task above. This app supports per-user tasks &amp; CRUD.',
+        tasks_img_lbl:     'Image / Screenshot (optional)',
+        tasks_paste_hint:  '📋 Click here, then <strong>Ctrl+V</strong> — paste the screenshot from clipboard',
+        tasks_or_file:     'or choose file manually:',
+        /* profile */
+        profile_title:         'Profile Settings',
+        profile_subtitle:      'Configure your notification preferences and account settings.',
+        profile_notif_title:   'Notification Settings',
+        profile_email_lbl:     'Notification Email',
+        profile_email_hint:    'Email address where you\'ll receive task reminders.',
+        profile_account_title: 'Account Info',
+        profile_username_lbl:  'Username:',
+        profile_member_lbl:    'Member since:',
+        profile_cur_email_lbl: 'Current notification email:',
+        profile_not_set:       'Not set',
+        profile_tip:           '💡 Tip: Set your notification email to receive automatic reminders for tasks with due dates.',
+        /* smtp */
+        smtp_title:        'SMTP Settings',
+        smtp_subtitle:     'Configure Brevo email settings for task reminders.',
+        smtp_config_title: 'SMTP Configuration',
+        smtp_user_note:    'See instructions on the right. Only admin can save the real settings.',
+        smtp_info_title:   'Brevo SMTP Instructions',
+        smtp_security:     '🔐 Security: passwords are stored securely. Never share your SMTP credentials.',
+        /* admin */
+        admin_title:       'Admin Panel',
+        admin_subtitle:    'Manage users and tasks in the application.',
+        admin_users_sec:   'Users',
+        admin_tasks_sec:   'All tasks',
+        admin_th_username: 'Username',
+        admin_th_email:    'Notification email',
+        admin_th_role:     'Role',
+        admin_th_reg:      'Registered',
+        admin_th_tasks:    'Tasks',
+        admin_th_actions:  'Actions',
+        admin_th_owner:    'Owner',
+        admin_th_title:    'Title',
+        admin_th_status:   'Status',
+        admin_th_date:     'Date',
+        admin_you:         'You',
+        admin_admins:      'Admins',
+        admin_users_lbl:   'Users',
+        admin_solved:      'Resolved',
+        admin_open:        'Open',
+        admin_toggle:      'Toggle role',
+        admin_delete:      'Delete',
+        admin_edit:        'Edit',
+        admin_no_del:      'Cannot delete yourself',
+        admin_tasks_lbl:   'Tasks',
+        /* task edit */
+        tedit_title:    'Edit task',
+        tedit_subtitle: 'Edit title, notes, due date or add an image.',
+        tedit_back:     '← Back to tasks',
+        tedit_details:  'Details',
+        tedit_tit_lbl:  'Title',
+        tedit_notes_lbl:'Notes',
+        tedit_due_lbl:  'Due at',
+        tedit_remind_lbl:'Remind at',
+        tedit_img_lbl:  'Image / Screenshot',
+        tedit_paste:    '📋 Click here, then press <strong>Ctrl+V</strong> to paste the screenshot from clipboard',
+        tedit_orfile:   'or choose file manually:',
+        tedit_preview:  'Preview',
+      }
+    };
+
+    function applyLanguage(lang) {
+      const t = i18n[lang];
+      if (!t) return;
+      /* text content */
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key] !== undefined) el.textContent = t[key];
+      });
+      /* innerHTML (headings/paragraphs with tags) */
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.dataset.i18nHtml;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+      /* placeholders */
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (t[key] !== undefined) el.placeholder = t[key];
+      });
+      /* flag buttons */
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      document.documentElement.lang = lang === 'en' ? 'en' : 'ro';
+      localStorage.setItem('lang', lang);
+    }
+
+    /* apply stored preference on every page load */
+    document.addEventListener('DOMContentLoaded', () => {
+      applyLanguage(localStorage.getItem('lang') || 'ro');
+    });
+  </script>
+
+  <!-- ════ Lightbox global ════ -->
+  <div id="lb-overlay" onclick="closeLightbox()">
+    <span id="lb-close" onclick="closeLightbox()">&#10005;</span>
+    <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+  </div>
+  <script>
+    function openLightbox(src) {
+      document.getElementById('lb-img').src = src;
+      document.getElementById('lb-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lb-overlay').classList.remove('open');
+      document.getElementById('lb-img').src = '';
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
   </script>
 
 </body>
