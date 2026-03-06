@@ -4,16 +4,25 @@
 
   <div class="page-head">
     <div>
-      <h2>My Tasks</h2>
-      <p class="subtitle">Quick overview + fast actions. Built for demo & deploy.</p>
+      <h2 data-i18n="tasks_title">Activități</h2>
+      <p class="subtitle" data-i18n="tasks_subtitle">Prezentare generală + acțiuni rapide. Creat pentru demo &amp; deploy.</p>
     </div>
   </div>
 
+  <section class="card" style="margin-bottom:14px;">
+    <h3 class="card-title" data-i18n="tasks_how_title">Cum funcționează</h3>
+    <div class="muted" style="line-height:1.5;" data-i18n-html="tasks_how_body">
+      - Completezi adresa de email în <em>Profil</em> (obligatoriu) pentru a primi memento-uri.<br>- Poți adăuga sarcini, seta data scadenței şi când să te anunțăm.<br>- Linkul <em>SMTP</em> este vizibil pentru toți; doar <em>admin</em> poate salva setările reale.<br>- Dacă eşti user şi dai click pe <em>SMTP</em>, vei vedea instrucțiuni — nu vei vedea valorile puse de admin.
+    </div>
+  </section>
+
   <div class="grid-2">
     <section class="card">
-      <h3 class="card-title">Add task</h3>
-      <form method="post">
+      <h3 class="card-title" data-i18n="tasks_add_title">Adăugă sarcină</h3>
+      <form method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
+        <!-- Captez limba activă în momentul creerii sarcinii / Capture active UI language at task creation -->
+        <input type="hidden" name="__lang" id="__langField" value="ro">
         <div class="row">
           {{ form.title(class_="input", placeholder="e.g. Prepare interview demo") }}
           {{ form.submit(class_="btn") }}
@@ -21,12 +30,12 @@
 
         <div class="row" style="margin-top:10px;">
           <div style="flex:1; min-width:240px;">
-            <label class="muted">Due</label>
+            <label class="muted" data-i18n="tasks_due_label">Scadent</label>
             {{ form.due_at(class_="input") }}
           </div>
 
           <div style="flex:1; min-width:240px;">
-            <label class="muted">Remind at</label>
+            <label class="muted" data-i18n="tasks_remind_label">Amintire la</label>
             {{ form.remind_at(class_="input") }}
           </div>
 
@@ -34,34 +43,114 @@
             {{ form.remind_email() }} <span>{{ form.remind_email.label.text }}</span>
           </label>
         </div>
+
+        <!-- Imagine / Screenshot — paste Ctrl+V sau fișier -->
+        <div style="margin-top:12px;">
+          <label class="muted" style="display:block;margin-bottom:6px;" data-i18n="tasks_img_lbl">Imagine / Screenshot (opțional)</label>
+
+          <!-- Zonă paste clipboard -->
+          <div id="tasksPasteZone"
+               tabindex="0"
+               style="border:2px dashed var(--border);border-radius:var(--radius-xs);padding:.8rem;text-align:center;cursor:pointer;margin-bottom:6px;transition:border-color .2s,background .2s;outline:none;background:var(--surface-2,#f6f8ff);"
+               title="Click, apoi Ctrl+V">
+            <div id="tasksPastePrompt" style="color:var(--text-3);font-size:.82rem;" data-i18n-html="tasks_paste_hint">
+              📋 Click aici, apoi <strong>Ctrl+V</strong> — lipești captura din clipboard
+            </div>
+            <img id="tasksPastePreview" src="" alt="preview"
+                 style="display:none;max-width:100%;max-height:160px;border-radius:6px;margin-top:6px;" />
+          </div>
+
+          <div style="font-size:.75rem;color:var(--text-3);margin-bottom:4px;" data-i18n="tasks_or_file">sau alege fișier manual:</div>
+          {{ form.image(class_="input", id="tasksFileInput", style="padding:.3rem;font-size:.82rem;", multiple=True, accept="image/*") }}
+          <small class="muted" style="font-size:11px;display:block;margin-top:3px;">JPG, PNG, GIF, WEBP &mdash; max 5 poze, 8 MB fiecare</small>
+        </div>
+
       </form>
 
-      <div class="search-row">
-        <input id="taskSearch" class="input" placeholder="Search tasks..." />
+      <div class="search-row" style="margin-top:12px;">
+        <input id="taskSearch" class="input" placeholder="Caută sarcini..." data-i18n-placeholder="tasks_search_ph" />
       </div>
+
+      <script>
+      (function () {
+        const zone      = document.getElementById('tasksPasteZone');
+        const prompt    = document.getElementById('tasksPastePrompt');
+        const preview   = document.getElementById('tasksPastePreview');
+        const fileInput = document.getElementById('tasksFileInput');
+
+        zone.addEventListener('click', () => zone.focus());
+        zone.addEventListener('focus', () => {
+          zone.style.borderColor = 'var(--accent)';
+          zone.style.background  = 'var(--accent-light,#eef1fd)';
+        });
+        zone.addEventListener('blur', () => {
+          zone.style.borderColor = 'var(--border)';
+          zone.style.background  = 'var(--surface-2,#f6f8ff)';
+        });
+
+        document.addEventListener('paste', (e) => {
+          /* Interceptez clipboardul doar când zona este focusată
+             / Only intercept clipboard when the paste zone is focused */
+          if (document.activeElement !== zone) return;
+
+          const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+          let imageItem = null;
+          for (const item of items) {
+            if (item.type.startsWith('image/')) { imageItem = item; break; }
+          }
+          if (!imageItem) return;
+          e.preventDefault();
+
+          const blob = imageItem.getAsFile();
+          const ext  = blob.type.split('/')[1] || 'png';
+          const file = new File([blob], `screenshot.${ext}`, { type: blob.type });
+
+          /* Injectez fișierul în input-ul de upload
+             / Inject the file into the file input */
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+
+          /* Afișez thumbnail de confirmare
+             / Show confirmation thumbnail */
+          const reader = new FileReader();
+          reader.onload = ev => {
+            preview.src = ev.target.result;
+            preview.style.display = 'block';
+            prompt.style.display  = 'none';
+            zone.style.borderColor = 'var(--green)';
+          };
+          reader.readAsDataURL(blob);
+        });
+      })();
+
+      // Setez limba activa in campul hidden inainte de submit
+      // / Set active UI language in the hidden field before form submit
+      document.getElementById('__langField').value = localStorage.getItem('appLang') || 'ro';
+      </script>
     </section>
 
     <section class="card">
-      <h3 class="card-title">Summary</h3>
+      <h3 class="card-title" data-i18n="tasks_summary">Rezumat</h3>
 
       <div class="stats">
         <div class="stat">
           <div class="stat-k">{{ total }}</div>
-          <div class="stat-l">Total</div>
+          <div class="stat-l" data-i18n="tasks_total">Total</div>
         </div>
         <div class="stat">
           <div class="stat-k">{{ open_count }}</div>
-          <div class="stat-l">Open</div>
+          <div class="stat-l" data-i18n="tasks_open">Deschise</div>
         </div>
         <div class="stat">
           <div class="stat-k">{{ done_count }}</div>
-          <div class="stat-l">Done</div>
+          <div class="stat-l" data-i18n="tasks_done">Finalizate</div>
         </div>
       </div>
 
       <div class="progress-wrap">
         <div class="progress-top">
-          <span>Completion</span>
+          <span data-i18n="tasks_completion">Progres</span>
           <span class="muted">{{ progress }}%</span>
         </div>
         <div class="progress">
@@ -80,17 +169,38 @@
           </a>
 
           <div class="text {% if t.done %}done{% endif %}">
-            <div class="task-title">{{ t.title }}</div>
-            <div class="meta">{{ t.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+            <a href="{{ url_for('view_task', task_id=t.id) }}" style="text-decoration:none;color:inherit;">
+              <div class="task-title">{{ t.title }}</div>
+            </a>
+            <div class="meta">
+              {{ t.created_at.strftime("%Y-%m-%d %H:%M") }}
+              {% if t.due_at %}<span style="margin-left:8px;">&#128197; {{ t.due_at.strftime("%Y-%m-%d %H:%M") }}</span>{% endif %}
+            </div>
+            {% if t.notes %}
+              <div class="meta" style="margin-top:2px;color:var(--muted);font-size:.8rem;">
+                {{ t.notes[:80] }}{% if t.notes|length > 80 %}...{% endif %}
+              </div>
+            {% endif %}
+            {% if t.image_filenames or t.image_filename %}
+              <div class="task-thumbs">
+                {% for fn in (t.image_filenames|from_json if t.image_filenames else [t.image_filename]) %}
+                  <img src="{{ url_for('static', filename='uploads/' + fn) }}"
+                       class="task-thumb"
+                       onclick="openLightbox('{{ url_for('static', filename='uploads/' + fn) }}')"
+                       alt="img">
+                {% endfor %}
+              </div>
+            {% endif %}
           </div>
         </div>
 
         <div class="right">
-          <a class="btn outline" href="{{ url_for('task_ics', task_id=t.id) }}">Add to Calendar</a>
+          <a class="btn outline" href="{{ url_for('edit_task', task_id=t.id) }}" data-i18n="tasks_edit_btn">Editează</a>
+          <a class="btn outline" href="{{ url_for('task_ics', task_id=t.id) }}" data-i18n="tasks_cal_btn">Calendar</a>
           <a class="danger"
              href="{{ url_for('delete_task', task_id=t.id) }}"
              data-confirm="Delete this task?">
-             Delete
+             &#128465;
           </a>
         </div>
       </li>
@@ -99,8 +209,8 @@
         <div class="empty-card">
           <div class="empty-emoji">📝</div>
           <div>
-            <div class="empty-title">No tasks yet</div>
-            <div class="empty-sub">Add your first task above. This app supports per-user tasks & CRUD.</div>
+          <div class="empty-title" data-i18n="tasks_empty_title">Nicio sarcină încă</div>
+            <div class="empty-sub" data-i18n="tasks_empty_sub">Adăugă prima ta sarcină mai sus. Aplicația suportă sarcini CRUD per utilizator.</div>
           </div>
         </div>
       </li>

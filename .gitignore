@@ -1,1 +1,38 @@
+# Variabile de mediu și secrete
 .env
+*.env
+
+# Baza de date locală
+instance/
+*.db
+*.sqlite3
+
+# Mediu virtual Python
+.venv/
+venv/
+env/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Fișiere upload-uri utilizatori (nu vrem poze în repo)
+static/uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Fișiere de log
+*.log
+# Folder nested git repo (nu face parte din proiect)
+flaskapp/
+
+# Fișier test temporar
+test.txt

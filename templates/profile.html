@@ -4,22 +4,22 @@
 
   <div class="page-head">
     <div>
-      <h2>Profile Settings</h2>
-      <p class="subtitle">Configure your notification preferences and account settings.</p>
+      <h2 data-i18n="profile_title">Setări Profil</h2>
+      <p class="subtitle" data-i18n="profile_subtitle">Configurează preferințele de notificare şi setările contului.</p>
     </div>
   </div>
 
   <div class="grid-2">
     <section class="card">
-      <h3 class="card-title">Notification Settings</h3>
+      <h3 class="card-title" data-i18n="profile_notif_title">Setări Notificări</h3>
       <form method="post">
         {{ form.hidden_tag() }}
         
         <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">Notification Email</label>
+          <label class="muted" style="display: block; margin-bottom: 6px;" data-i18n="profile_email_lbl">Email Notificări</label>
           {{ form.notification_email(class_="input", placeholder="your.email@example.com") }}
           <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
-            Email address where you'll receive task reminders. Leave empty to disable email notifications.
+            <span data-i18n="profile_email_hint">Adresa de email unde vei primi memento-uri pentru sarcini.</span>
           </small>
         </div>
 
@@ -30,32 +30,32 @@
     </section>
 
     <section class="card">
-      <h3 class="card-title">Account Info</h3>
+      <h3 class="card-title" data-i18n="profile_account_title">Info Cont</h3>
       
       <div style="padding: 12px 0;">
         <div style="marginBottom: 10px;">
-          <span class="muted">Username:</span>
+          <span class="muted" data-i18n="profile_username_lbl">Utilizator:</span>
           <strong>{{ current_user.username }}</strong>
         </div>
         
         <div style="marginBottom: 10px;">
-          <span class="muted">Member since:</span>
+          <span class="muted" data-i18n="profile_member_lbl">Membru din:</span>
           {{ current_user.created_at.strftime("%B %d, %Y") }}
         </div>
 
         <div style="marginBottom: 10px;">
-          <span class="muted">Current notification email:</span>
+          <span class="muted" data-i18n="profile_cur_email_lbl">Email notificări curent:</span>
           {% if current_user.notification_email %}
-            <span style="color: var(--ok);">{{ current_user.notification_email }}</span>
+            <span style="color: var(--green);">{{ current_user.notification_email }}</span>
           {% else %}
-            <span style="color: var(--muted);">Not set</span>
+            <span style="color: var(--text-3);" data-i18n="profile_not_set">Nesetat</span>
           {% endif %}
         </div>
       </div>
 
       <div style="padding: 12px; border-radius: 12px; border: 1px solid rgba(96,165,250,.3); background: rgba(96,165,250,.08); margin-top: 14px;">
         <div style="font-size: 13px; color: rgba(255,255,255,.75);">
-          <strong>💡 Tip:</strong> Set your notification email to receive automatic reminders for tasks with due dates.
+          <span data-i18n="profile_tip">💡 Sfat: Setează emailul pentru a primi remindere automate pentru sarcini cu termene.</span>
         </div>
       </div>
     </section>

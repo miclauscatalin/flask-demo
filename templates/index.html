@@ -1,10 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-  <h1>Demo App ✅</h1>
-  <p>Un proiect mic pentru interviu: autentificare + CRUD + deploy.</p>
-  <div class="actions">
-    <a class="btn" href="{{ url_for('login') }}">Login</a>
-    <a class="btn outline" href="{{ url_for('register') }}">Register</a>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+              min-height:calc(100vh - 90px - 80px);text-align:center;padding:2rem 1rem;">
+
+    <h1 data-i18n="index_title"
+        style="font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.03em;
+               margin-bottom:.75rem;color:var(--text);">Task Organizer 📋</h1>
+
+    <p data-i18n="index_desc"
+       style="font-size:1.05rem;color:var(--text-3);max-width:480px;line-height:1.7;
+              margin-bottom:2.2rem;">
+      Organizează-ți sarcinile, primeşte memento-uri pe email şi colaborează eficient.
+    </p>
+
+    <div class="actions" style="gap:1rem;">
+      <a class="btn" href="{{ url_for('login') }}" data-i18n="index_login_btn"
+         style="padding:.75rem 2.2rem;font-size:1rem;">Autentificare</a>
+      <a class="btn outline" href="{{ url_for('register') }}" data-i18n="index_reg_btn"
+         style="padding:.75rem 2.2rem;font-size:1rem;">Înregistrare</a>
+    </div>
+
   </div>
 {% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Verificare 2FA{% endblock %}
+{% block content %}
+  <h2 data-i18n="twofa_title">Verificare în doi pași</h2>
+  <form method="post" class="card" style="max-width:420px;margin:0 auto;">
+    {{ form.hidden_tag() }}
+    <p class="muted" data-i18n="twofa_hint">Ți-am trimis un cod de 6 cifre pe email. Introdu-l mai jos.</p>
+    <label>{{ form.code.label }}</label>
+    {{ form.code(class_="input", placeholder="000000", maxlength=6, autocomplete="one-time-code") }}
+    {% for err in form.code.errors %}<small style="color:var(--red);">{{ err }}</small>{% endfor %}
+    <div class="row" style="margin-top:10px;">
+      {{ form.submit(class_="btn") }}
+      <a class="btn outline" href="{{ url_for('login') }}" data-i18n="twofa_back">← Înapoi</a>
+    </div>
+  </form>
+{% endblock %}

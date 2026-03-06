@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Admin Panel</h2>
+    <p class="subtitle">Gestionez utilizatorii și sarcinile din aplicație.</p>
+  </div>
+</div>
+
+<!-- Stats overview -->
+<div class="grid-2" style="margin-bottom:20px;">
+  <section class="card">
+    <h3 class="card-title"><span data-i18n="admin_users_sec">Utilizatori</span> — {{ users|length }}</h3>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-k">{{ users|selectattr('is_admin')|list|length }}</div>
+        <div class="stat-l" data-i18n="admin_admins">Admini</div>
+      </div>
+      <div class="stat">
+        <div class="stat-k">{{ users|rejectattr('is_admin')|list|length }}</div>
+        <div class="stat-l" data-i18n="admin_users_lbl">Useri</div>
+      </div>
+    </div>
+  </section>
+  <section class="card">
+    <h3 class="card-title"><span data-i18n="admin_tasks_lbl">Sarcini</span> — {{ tasks|length }}</h3>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-k">{{ tasks|selectattr('done')|list|length }}</div>
+        <div class="stat-l" data-i18n="admin_solved">Rezolvate</div>
+      </div>
+      <div class="stat">
+        <div class="stat-k">{{ tasks|rejectattr('done')|list|length }}</div>
+        <div class="stat-l" data-i18n="admin_open">Deschise</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Tabel utilizatori -->
+<section class="card" style="margin-bottom:20px; overflow:hidden;">
+  <h3 class="card-title" style="margin-bottom:14px;" data-i18n="admin_users_sec">Utilizatori</h3>
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th data-i18n="admin_th_username">Utilizator</th>
+          <th data-i18n="admin_th_email">Email notificări</th>
+          <th data-i18n="admin_th_role">Rol</th>
+          <th data-i18n="admin_th_reg">Înregistrat</th>
+          <th data-i18n="admin_th_tasks">Sarcini</th>
+          <th data-i18n="admin_th_actions">Acțiuni</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td class="muted">{{ u.id }}</td>
+          <td>
+            <strong>{{ u.username }}</strong>
+            {% if u.id == current_user.id %}
+              <span class="badge open" style="margin-left:4px;" data-i18n="admin_you">Tu</span>
+            {% endif %}
+          </td>
+          <td class="muted">{{ u.notification_email or '—' }}</td>
+          <td>
+            {% if u.is_admin %}
+              <span class="badge done">admin</span>
+            {% else %}
+              <span class="badge open">user</span>
+            {% endif %}
+          </td>
+          <td class="muted">{{ u.created_at.strftime("%Y-%m-%d") }}</td>
+          <td class="muted">{{ u.tasks|length }}</td>
+          <td>
+            {% if u.id != current_user.id %}
+              <a href="{{ url_for('admin_toggle_role', user_id=u.id) }}"
+                 class="btn outline"
+                 style="font-size:.78rem;padding:.3rem .7rem;"
+                 onclick="return confirm('Schimbi rolul pentru {{ u.username }}?')">
+                {% if u.is_admin %}⬇ → user{% else %}⬆ → admin{% endif %}
+              </a>
+              <a href="{{ url_for('admin_delete_user', user_id=u.id) }}"
+                 class="danger"
+                 style="margin-left:6px;"
+                 onclick="return confirm('Ștergi utilizatorul {{ u.username }} și toate taskurile lui?')">
+                <span data-i18n="admin_delete">Șterge</span>
+              </a>
+            {% else %}
+              <span class="muted" style="font-size:.8rem;" data-i18n="admin_no_del">Nu te poți şterge</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Tabel sarcini -->
+<section class="card" style="overflow:hidden;">
+  <h3 class="card-title" style="margin-bottom:14px;" data-i18n="admin_tasks_sec">Toate sarcinile</h3>
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th data-i18n="admin_th_title">Titlu</th>
+          <th data-i18n="admin_th_owner">User</th>
+          <th data-i18n="admin_th_status">Status</th>
+          <th data-i18n="tasks_due_label">Scadent</th>
+          <th data-i18n="admin_th_date">Creat</th>
+          <th data-i18n="admin_th_actions">Acțiuni</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tasks %}
+        <tr>
+          <td class="muted">{{ t.id }}</td>
+          <td>
+            <a href="{{ url_for('edit_task', task_id=t.id) }}" style="color:var(--text);text-decoration:none;">
+              {{ t.title }}
+            </a>
+            {% if t.image_filename %}
+              <span title="Are imagine" style="margin-left:4px;">🖼</span>
+            {% endif %}
+          </td>
+          <td class="muted">{{ t.owner.username }}</td>
+          <td>
+            {% if t.done %}
+              <span class="badge done">rezolvat</span>
+            {% else %}
+              <span class="badge open">deschis</span>
+            {% endif %}
+          </td>
+          <td class="muted">{{ t.due_at.strftime("%Y-%m-%d %H:%M") if t.due_at else '—' }}</td>
+          <td class="muted">{{ t.created_at.strftime("%Y-%m-%d") }}</td>
+          <td>
+            <a href="{{ url_for('edit_task', task_id=t.id) }}"
+               class="btn outline"
+               style="font-size:.78rem;padding:.3rem .7rem;">
+              <span data-i18n="admin_edit">Editează</span>
+            </a>
+            <a href="{{ url_for('admin_delete_task', task_id=t.id) }}"
+               class="danger"
+               style="margin-left:6px;"
+               onclick="return confirm('Ștergi taskul: {{ t.title }}?')">
+              <span data-i18n="admin_delete">Șterge</span>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .875rem;
+  }
+  .admin-table th {
+    text-align: left;
+    padding: .6rem 1rem;
+    font-size: .75rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .admin-table td {
+    padding: .7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .admin-table tr:last-child td { border-bottom: none; }
+  .admin-table tr:hover td { background: rgba(255,255,255,.02); }
+</style>
+
+{% endblock %}

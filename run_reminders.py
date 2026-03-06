@@ -6,7 +6,7 @@ from services.brevo_email import send_email_from_db
 
 
 def main():
-    now = datetime.utcnow()
+    now = datetime.now()
 
     with app.app_context():
         tasks = (
@@ -22,13 +22,15 @@ def main():
         for t in tasks:
             user = User.query.get(t.user_id)
             
-            # Check for SMTP configuration 
+            # Verific întâi configurația SMTP înainte de a trimite
+            # / I check SMTP configuration first before attempting to send
             smtp_settings = SMTPSettings.query.first()
             if not smtp_settings or not (smtp_settings.smtp_host and smtp_settings.smtp_username):
                 print("⚠️  SMTP not configured - skipping email reminders")
                 break
-            
-            # Pentru test, folosesc TEST_EMAIL din .env sau smtp settings, altfel user.notification_email
+
+            # Pentru test folosesc TEST_EMAIL din .env; altfel emailul utilizatorului
+            # / For testing I use TEST_EMAIL from .env; otherwise the user's notification_email
             test_email = os.getenv("TEST_EMAIL") or smtp_settings.test_email
             email_address = test_email if test_email else (user.notification_email if user else None)
             

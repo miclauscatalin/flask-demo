@@ -4,82 +4,128 @@
 
   <div class="page-head">
     <div>
-      <h2>SMTP Settings</h2>
-      <p class="subtitle">Configure Brevo email settings for task reminders.</p>
+      <h2 data-i18n="smtp_title">Setări SMTP</h2>
+      <p class="subtitle" data-i18n="smtp_subtitle">Configurare Brevo pentru memento-uri email.</p>
     </div>
   </div>
 
   <div class="grid-2">
     <section class="card">
-      <h3 class="card-title">SMTP Configuration</h3>
+      <h3 class="card-title" data-i18n="smtp_config_title">Configurare SMTP</h3>
       <form method="post">
         {{ form.hidden_tag() }}
-        
-        <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Host</label>
-          {{ form.smtp_host(class_="input", placeholder="smtp-relay.brevo.com") }}
-          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
-            Your SMTP server (e.g., smtp-relay.brevo.com for Brevo)
-          </small>
-        </div>
 
-        <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Port</label>
-          {{ form.smtp_port(class_="input", placeholder="587") }}
-          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
-            Usually 587 (TLS) or 465 (SSL)
-          </small>
-        </div>
+        {% if is_admin %}
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Host</label>
+            {{ form.smtp_host(class_="input", placeholder="smtp-relay.brevo.com") }}
+            <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+              Your SMTP server (e.g., smtp-relay.brevo.com for Brevo)
+            </small>
+          </div>
 
-        <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Username</label>
-          {{ form.smtp_username(class_="input", placeholder="your.email@brevo.com") }}
-          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
-            SMTP username (usually your email)
-          </small>
-        </div>
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Port</label>
+            {{ form.smtp_port(class_="input", placeholder="587") }}
+            <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+              Usually 587 (TLS) or 465 (SSL)
+            </small>
+          </div>
 
-        <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Password</label>
-          {{ form.smtp_password(class_="input", placeholder="Your SMTP password/key", type="password") }}
-          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
-            SMTP key or password from your email provider
-          </small>
-        </div>
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Username</label>
+            {{ form.smtp_username(class_="input", placeholder="your.email@brevo.com") }}
+            <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+              SMTP username (usually your email)
+            </small>
+          </div>
 
-        <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">Sender Email</label>
-          {{ form.sender_email(class_="input", placeholder="noreply@yourdomain.com") }}
-        </div>
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Password</label>
+            {{ form.smtp_password(class_="input", placeholder="Your SMTP password/key", type="password") }}
+            <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+              SMTP key or password from your email provider
+            </small>
+          </div>
 
-        <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">Sender Name</label>
-          {{ form.sender_name(class_="input", placeholder="Task Demo") }}
-        </div>
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">Sender Email</label>
+            {{ form.sender_email(class_="input", placeholder="noreply@yourdomain.com") }}
+          </div>
 
-        <div style="margin-bottom: 14px;">
-          <label class="muted" style="display: block; margin-bottom: 6px;">Test Email</label>
-          {{ form.test_email(class_="input", placeholder="your.email@example.com") }}
-          <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
-            Email address for testing (optional)
-          </small>
-        </div>
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">Sender Name</label>
+            {{ form.sender_name(class_="input", placeholder="Task Demo") }}
+          </div>
 
-        <div class="row">
-          {{ form.submit(class_="btn") }}
-          <button type="button" class="btn outline" onclick="testSMTP()">Test Connection</button>
-        </div>
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">Test Email</label>
+            {{ form.test_email(class_="input", placeholder="your.email@example.com") }}
+            <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+              Email address for testing (optional)
+            </small>
+          </div>
+
+          <div class="row">
+            {{ form.submit(class_="btn") }}
+            <button type="button" class="btn outline" onclick="testSMTP()">Test Connection</button>
+          </div>
+
+        {% else %}
+          <!-- User sees placeholders/instrucțiuni, dar nu valorile adminului -->
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Host</label>
+            {{ form.smtp_host(class_="input", placeholder="smtp-relay.brevo.com", disabled=true) }}
+            <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+              Vezi instrucțiuni în partea dreaptă. Doar adminul poate salva setările reale.
+            </small>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Port</label>
+            {{ form.smtp_port(class_="input", placeholder="587", disabled=true) }}
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Username</label>
+            {{ form.smtp_username(class_="input", placeholder="your.email@brevo.com", disabled=true) }}
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">SMTP Password</label>
+            {{ form.smtp_password(class_="input", placeholder="Your SMTP password/key", type="password", disabled=true) }}
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">Sender Email</label>
+            {{ form.sender_email(class_="input", placeholder="noreply@yourdomain.com", disabled=true) }}
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">Sender Name</label>
+            {{ form.sender_name(class_="input", placeholder="Task Demo", disabled=true) }}
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label class="muted" style="display: block; margin-bottom: 6px;">Test Email</label>
+            {{ form.test_email(class_="input", placeholder="your.email@example.com", disabled=true) }}
+            <small class="muted" style="font-size: 12px; display: block; margin-top: 4px;">
+              <span data-i18n="smtp_user_note">Vizualizare instrucțiuni doar — contactă adminul pentru date reale.</span>
+            </small>
+          </div>
+
+        {% endif %}
       </form>
     </section>
 
     <section class="card">
-      <h3 class="card-title">Setup Instructions</h3>
+      <h3 class="card-title" data-i18n="smtp_info_title">Instrucțiuni Brevo SMTP</h3>
       
       <div style="padding: 12px 0;">
         <div style="margin-bottom: 16px;">
           <div style="font-weight: 700; margin-bottom: 6px;">1. Get Brevo SMTP Credentials</div>
           <div class="muted" style="font-size: 14px; line-height: 1.4;">
-            • Login to <a href="https://app.brevo.com" target="_blank" style="color: var(--brand);">Brevo Dashboard</a><br>
+            • Login to <a href="https://app.brevo.com" target="_blank" style="color: var(--accent);">Brevo Dashboard</a><br>
             • Go to Account → SMTP & API<br>
             • In "Your SMTP Settings" find:<br>
             &nbsp;&nbsp;- SMTP Server<br>
@@ -103,18 +149,18 @@
         <div>
           <div style="font-weight: 700; margin-bottom: 6px;">3. Current Status</div>
           {% if settings and settings.smtp_host and settings.smtp_username %}
-            <span style="color: var(--ok);">✅ SMTP Configured</span><br>
+            <span style="color: var(--green);">✅ SMTP Configured</span><br>
             <span class="muted" style="font-size: 12px;">{{ settings.smtp_host }}:{{ settings.smtp_port }} as {{ settings.smtp_username }}</span><br>
             <span class="muted" style="font-size: 12px;">Last updated: {{ settings.updated_at.strftime("%Y-%m-%d %H:%M") }}</span>
           {% else %}
-            <span style="color: var(--err);">❌ SMTP Not Configured</span>
+            <span style="color: var(--red);">❌ SMTP Not Configured</span>
           {% endif %}
         </div>
       </div>
 
       <div style="padding: 12px; border-radius: 12px; border: 1px solid rgba(239,68,68,.3); background: rgba(239,68,68,.08); margin-top: 14px;">
         <div style="font-size: 13px; color: rgba(255,255,255,.75);">
-          <strong>🔐 Security:</strong> Passwords are stored securely. Never share your SMTP credentials.
+          <span data-i18n="smtp_security">🔐 Securitate: parolele sunt stocate securizat. Nu partaja credențialele SMTP.</span>
         </div>
       </div>
     </section>
