@@ -22,13 +22,13 @@ def main():
         for t in tasks:
             user = User.query.get(t.user_id)
             
-            # Check for SMTP configuration first
+            # Check for SMTP configuration 
             smtp_settings = SMTPSettings.query.first()
             if not smtp_settings or not (smtp_settings.smtp_host and smtp_settings.smtp_username):
                 print("⚠️  SMTP not configured - skipping email reminders")
                 break
             
-            # Pentru test, foloseşte TEST_EMAIL din .env sau smtp settings, altfel user.notification_email
+            # Pentru test, folosesc TEST_EMAIL din .env sau smtp settings, altfel user.notification_email
             test_email = os.getenv("TEST_EMAIL") or smtp_settings.test_email
             email_address = test_email if test_email else (user.notification_email if user else None)
             
