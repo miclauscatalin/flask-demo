@@ -148,6 +148,59 @@
 
     .brand-icon svg { display: block; }
 
+    /* modern text-based logo */
+    .logo-modern {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .8rem;
+      height: 60px;
+      width: 180px;
+      border-radius: 12px;
+      background: transparent;
+      transition: transform .15s ease;
+    }
+
+    .logo-icon {
+      font-size: 1.8rem;
+      filter: drop-shadow(0 2px 4px rgba(67,97,238,.2));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .logo-text-container {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .logo-modern:hover {
+      transform: translateY(-2px);
+    }
+
+    .logo-text,
+    .logo-accent {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.1rem;
+      line-height: 1;
+      letter-spacing: -.03em;
+      color: var(--text);
+    }
+
+    .logo-text {
+      margin-right: 0;
+    }
+
+    .logo-accent {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
     .brand-name {
       font-family: var(--font-display);
       font-size: 1.05rem;
@@ -795,9 +848,13 @@
 
     <a class="brand" href="/">
       <div class="brand-icon">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"
-             style="width:80px;height:80px;border-radius:18px;object-fit:cover;display:block;
-                    box-shadow:0 4px 16px rgba(67,97,238,.25);">
+        <div class="logo-modern">
+          <div class="logo-icon">📋</div>
+          <div class="logo-text-container">
+            <span class="logo-text">Task</span>
+            <span class="logo-accent">Organizer</span>
+          </div>
+        </div>
       </div>
     </a>
 
