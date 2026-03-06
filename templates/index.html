@@ -9,17 +9,216 @@
                margin-bottom:.75rem;color:var(--text);">Task Organizer 📋</h1>
 
     <p data-i18n="index_desc"
-       style="font-size:1.05rem;color:var(--accent);max-width:480px;line-height:1.7;
-              margin-bottom:2.2rem;font-weight:500;">
+       style="font-size:1.05rem;color:var(--text-3);max-width:480px;line-height:1.7;
+              margin-bottom:2.2rem;">
       Organizează-ți sarcinile, primeşte memento-uri pe email şi colaborează eficient.
     </p>
 
-    <div class="actions" style="gap:1rem;">
-      <a class="btn" href="{{ url_for('login') }}" data-i18n="index_login_btn"
-         style="padding:.75rem 2.2rem;font-size:1rem;">Autentificare</a>
-      <a class="btn outline" href="{{ url_for('register') }}" data-i18n="index_reg_btn"
-         style="padding:.75rem 2.2rem;font-size:1rem;">Înregistrare</a>
-    </div>
-
+  <!-- Butoane -->
+  <div class="hero-actions">
+    <a class="btn btn-primary hero-btn" href="{{ url_for('login') }}" data-i18n="index_login_btn">
+      Autentificare
+    </a>
+    <a class="btn btn-secondary hero-btn" href="{{ url_for('register') }}" data-i18n="index_reg_btn">
+      Înregistrare
+    </a>
   </div>
+
+  <!-- Feature chips -->
+  <div class="hero-chips">
+    <span class="chip">✓ Taskuri CRUD</span>
+    <span class="chip">✓ Memento email</span>
+    <span class="chip">✓ 2FA login</span>
+    <span class="chip">✓ Panou admin</span>
+    <span class="chip">✓ Bilingv RO/EN</span>
+  </div>
+
+  <!-- Card preview decorativ -->
+  <div class="hero-preview">
+    <div class="preview-card">
+      <div class="preview-row">
+        <span class="preview-check done">✓</span>
+        <span class="preview-text done">Configurare server SMTP</span>
+        <span class="badge done">Done</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-check open"></span>
+        <span class="preview-text">Prezentare la interviu</span>
+        <span class="badge open">Open</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-check open"></span>
+        <span class="preview-text">Deploy pe VPS</span>
+        <span class="badge overdue">Overdue</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  /* ── Hero wrapper ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: clamp(2.5rem, 6vw, 5rem) 1rem clamp(2rem, 4vw, 3rem);
+    min-height: calc(100vh - 68px - 64px);
+    gap: 0;
+  }
+
+  /* ── Badge ── */
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1.5px solid #c7d2fe;
+    padding: .28rem .85rem;
+    border-radius: 99px;
+    margin-bottom: 1.4rem;
+  }
+
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: .5; transform: scale(.7); }
+  }
+
+  /* ── Titlu ── */
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 800;
+    letter-spacing: -.04em;
+    line-height: 1.1;
+    color: var(--text);           /* #0f1117 — contrast maxim ✓ */
+    margin-bottom: 1.1rem;
+    max-width: 700px;
+  }
+
+  .hero-title-accent {
+    display: block;
+    /* gradient text pe rândul 2 */
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Descriere ── */
+  .hero-desc {
+    font-size: 1.05rem;
+    color: var(--text-2);         /* #374151 — contrast 5.8:1 ✓ */
+    max-width: 460px;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  /* ── Butoane ── */
+  .hero-actions {
+    display: flex;
+    gap: .85rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-btn {
+    padding: .72rem 2rem;
+    font-size: .95rem;
+    border-radius: 8px;
+  }
+
+  /* ── Feature chips ── */
+  .hero-chips {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .chip {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-2);         /* contrast 5.8:1 ✓ */
+    background: var(--surface);
+    border: 1.5px solid var(--border-2);
+    padding: .25rem .7rem;
+    border-radius: 99px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── Preview card decorativ ── */
+  .hero-preview {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .preview-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: .65rem;
+    text-align: left;
+  }
+
+  .preview-row {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+  }
+
+  .preview-check {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: .72rem;
+    font-weight: 700;
+  }
+
+  .preview-check.done {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1.5px solid #a7f3d0;
+  }
+
+  .preview-check.open {
+    border: 1.5px solid var(--border);
+    background: var(--surface-2);
+  }
+
+  .preview-text {
+    flex: 1;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--text);           /* #0f1117 ✓ */
+  }
+
+  .preview-text.done {
+    text-decoration: line-through;
+    color: var(--text-3);
+  }
+</style>
+
 {% endblock %}
