@@ -12,7 +12,12 @@ class Config:
     if not SECRET_KEY:
         raise RuntimeError("SECRET_KEY nu este setat în .env! Generează unul cu: python -c \"import secrets; print(secrets.token_hex(32))\"")
 
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///app.db")
+    # Render furnizează "postgres://..." dar SQLAlchemy 2.x necesită "postgresql://..."
+    # / Render provides "postgres://..." but SQLAlchemy 2.x requires "postgresql://..."
+    _db_url = os.getenv("DATABASE_URL", "sqlite:///app.db")
+    if _db_url.startswith("postgres://"):
+        _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     UPLOAD_FOLDER = os.path.join(BASEDIR, "static", "uploads")
