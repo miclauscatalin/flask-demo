@@ -18,6 +18,11 @@ app.config.from_object(Config)
 
 db.init_app(app)
 
+# Creez tabelele automat dacă nu există (primul deploy, DB goală)
+# / Auto-create all tables on startup if they don't exist (first deploy, empty DB)
+with app.app_context():
+    db.create_all()
+
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)

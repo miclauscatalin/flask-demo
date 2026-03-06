@@ -19,15 +19,20 @@ def check_and_send_reminders(app):
 
         # Găsesc sarcinile care necesită memento — netrimiş, neterminat, cu dată trecută
         # / I fetch tasks that need a reminder: unsent, not done, remind_at in the past
-        tasks = (
-            Task.query
-            .filter(Task.remind_email.is_(True))
-            .filter(Task.remind_at.isnot(None))
-            .filter(Task.remind_at <= now)
-            .filter(Task.reminder_sent_at.is_(None))
-            .filter(Task.done.is_(False))
-            .all()
-        )
+        try:
+            tasks = (
+                Task.query
+                .filter(Task.remind_email.is_(True))
+                .filter(Task.remind_at.isnot(None))
+                .filter(Task.remind_at <= now)
+                .filter(Task.reminder_sent_at.is_(None))
+                .filter(Task.done.is_(False))
+                .all()
+            )
+        except Exception as e:
+            # Tabelele pot lipsi la primul start / Tables may be missing on first start
+            print(f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] ⚠️  DB not ready yet: {e}")
+            return
         
         if not tasks:
             print(f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] No pending reminders")
