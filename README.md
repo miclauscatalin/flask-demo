@@ -359,7 +359,9 @@ Vezi fișierul [LICENSE](LICENSE) pentru detalii complete.
 - 📧 miclaus.catalin@gmail.com
 - 🐙 [github.com/miclauscatalin](https://github.com/miclauscatalin)
 
-- # 📋 Task Organizer — Flask & Python
+-
+-
+# 📋 Task Organizer — Flask & Python English Version
 
 > A complete full-stack web application for personal task management, featuring two-factor authentication (2FA), automated email reminders, image uploads, and an admin panel.
 
