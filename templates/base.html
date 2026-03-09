@@ -765,11 +765,104 @@
     .empty-sub   { font-size: .85rem; color: var(--text-3); margin-top: .2rem; }
 
     /* ─────────────────────────────────────────────
+       Meniu Hamburger Mobile
+    ───────────────────────────────────────────── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 2.5px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(7px, 7px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 90px;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-bottom: 1.5px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .mobile-menu.active {
+      max-height: 500px;
+    }
+
+    .mobile-menu-content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .mobile-menu-content a,
+    .mobile-menu-content .user-pill {
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      border-radius: var(--radius-xs);
+      text-align: left;
+      display: block;
+    }
+
+    .mobile-menu-content .user-pill {
+      background: var(--accent-light);
+      border: 1.5px solid var(--border);
+      margin-bottom: 0.5rem;
+    }
+
+    .mobile-menu-content .nav-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.5rem 0;
+    }
+
+    /* ─────────────────────────────────────────────
        Responsive
     ───────────────────────────────────────────── */
-    @media (max-width: 640px) {
-      .links a:not(.cta) { display: none; }
-      .nav-divider        { display: none; }
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .mobile-menu { display: block; }
+      .links { display: none; }
+      
+      .nav {
+        padding: 0 1rem;
+      }
+      
+      .lang-switcher {
+        border-left: none;
+        padding-left: 0;
+        margin-left: auto;
+        margin-right: 0.5rem;
+      }
     }
 
     /* ─────────────────────────────────────────────
@@ -871,7 +964,37 @@
       <button class="lang-btn" data-lang="en" onclick="applyLanguage('en')" title="English">🇬🇧</button>
     </div>
 
+    <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
   </header>
+
+  <!-- Meniu Mobile -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-content">
+      {% if current_user.is_authenticated %}
+        <span class="user-pill">
+          <span class="user-pill-avatar">
+            {{ current_user.username[0]|upper }}
+          </span>
+          {{ current_user.username }}
+        </span>
+        
+        <div class="nav-divider"></div>
+        
+        <a href="{{ url_for('tasks') }}" data-i18n="nav_tasks">Activități</a>
+        <a href="{{ url_for('profile') }}" data-i18n="nav_profile">Profil</a>
+        <a href="{{ url_for('smtp_settings') }}" data-i18n="nav_smtp">SMTP</a>
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin_dashboard') }}" style="color:var(--amber);">&#9881; <span data-i18n="nav_admin">Admin</span></a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" data-i18n="nav_logout">Deconectare</a>
+      {% endif %}
+    </div>
+  </div>
 
   <!-- ════════════════════════════════════
        Conținut pagină
@@ -1201,6 +1324,24 @@
     /* apply stored preference on every page load */
     document.addEventListener('DOMContentLoaded', () => {
       applyLanguage(localStorage.getItem('lang') || 'ro');
+    });
+
+    /* toggle mobile menu */
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const hamburger = document.querySelector('.hamburger');
+      menu.classList.toggle('active');
+      hamburger.classList.toggle('active');
+    }
+
+    /* close mobile menu when clicking on a link */
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileLinks = document.querySelectorAll('.mobile-menu-content a');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          toggleMobileMenu();
+        });
+      });
     });
   </script>
 
