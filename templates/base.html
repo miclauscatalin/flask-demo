@@ -148,18 +148,16 @@
 
     .brand-icon svg { display: block; }
 
-    /* modern text-based logo */
+    /* modern SVG logo */
     .logo-modern {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: .4rem;
+      gap: .65rem;
       height: 50px;
       width: auto;
-      padding: 0 1.2rem;
-      border-radius: 12px;
-      background: transparent;
+      padding: 0;
       transition: transform .15s ease;
     }
 
@@ -167,14 +165,25 @@
       transform: scale(1.05);
     }
 
+    .logo-modern svg {
+      width: 42px;
+      height: 42px;
+      filter: drop-shadow(0 2px 4px rgba(67, 97, 238, 0.15));
+    }
+
+    .logo-text-container {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
     .logo-text,
     .logo-accent {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 1.15rem;
-      line-height: 1;
+      font-size: 1.05rem;
+      line-height: .95;
       letter-spacing: -.03em;
-      text-align: center;
     }
 
     .logo-text {
@@ -184,6 +193,7 @@
     .logo-accent {
       color: var(--accent-2);
       font-weight: 700;
+      font-size: .95rem;
     }
 
     .brand-name {
@@ -927,8 +937,43 @@
     <a class="brand" href="/">
       <div class="brand-icon">
         <div class="logo-modern">
-          <span class="logo-text">Task</span>
-          <span class="logo-accent">Organizer</span>
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Clipboard background -->
+            <rect x="20" y="15" width="60" height="75" rx="6" fill="#4361ee" opacity="0.1"/>
+            <rect x="20" y="15" width="60" height="75" rx="6" fill="none" stroke="#4361ee" stroke-width="3"/>
+            
+            <!-- Clipboard clip -->
+            <rect x="38" y="10" width="24" height="8" rx="3" fill="#7c3aed"/>
+            <rect x="42" y="13" width="16" height="6" rx="2" fill="white"/>
+            
+            <!-- Checkmark 1 -->
+            <circle cx="32" cy="35" r="4" fill="#059669" opacity="0.2"/>
+            <path d="M 30 35 L 32 37 L 35 33" stroke="#059669" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="42" y1="35" x2="70" y2="35" stroke="#4361ee" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+            
+            <!-- Checkmark 2 -->
+            <circle cx="32" cy="50" r="4" fill="#059669" opacity="0.2"/>
+            <path d="M 30 50 L 32 52 L 35 48" stroke="#059669" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="42" y1="50" x2="70" y2="50" stroke="#4361ee" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+            
+            <!-- Checkmark 3 -->
+            <circle cx="32" cy="65" r="4" fill="#4361ee" opacity="0.15"/>
+            <circle cx="32" cy="65" r="3" fill="none" stroke="#4361ee" stroke-width="2" opacity="0.5"/>
+            <line x1="42" y1="65" x2="70" y2="65" stroke="#4361ee" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+            
+            <!-- Gradient overlay for depth -->
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#4361ee;stop-opacity:0.05" />
+                <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.1" />
+              </linearGradient>
+            </defs>
+            <rect x="20" y="15" width="60" height="75" rx="6" fill="url(#logoGrad)"/>
+          </svg>
+          <div class="logo-text-container">
+            <span class="logo-text">Task</span>
+            <span class="logo-accent">Organizer</span>
+          </div>
         </div>
       </div>
     </a>
