@@ -992,8 +992,8 @@
 
         <a href="{{ url_for('tasks') }}" data-i18n="nav_tasks">Activități</a>
         <a href="{{ url_for('profile') }}" data-i18n="nav_profile">Profil</a>
-        <a href="{{ url_for('smtp_settings') }}" data-i18n="nav_smtp">SMTP</a>
         {% if current_user.is_admin %}
+          <a href="{{ url_for('smtp_settings') }}" data-i18n="nav_smtp">SMTP</a>
           <a href="{{ url_for('admin_dashboard') }}" style="color:var(--amber);">&#9881; <span data-i18n="nav_admin">Admin</span></a>
         {% endif %}
         <a href="{{ url_for('logout') }}" data-i18n="nav_logout">Deconectare</a>
@@ -1032,8 +1032,8 @@
         
         <a href="{{ url_for('tasks') }}" data-i18n="nav_tasks">Activități</a>
         <a href="{{ url_for('profile') }}" data-i18n="nav_profile">Profil</a>
-        <a href="{{ url_for('smtp_settings') }}" data-i18n="nav_smtp">SMTP</a>
         {% if current_user.is_admin %}
+          <a href="{{ url_for('smtp_settings') }}" data-i18n="nav_smtp">SMTP</a>
           <a href="{{ url_for('admin_dashboard') }}" style="color:var(--amber);">&#9881; <span data-i18n="nav_admin">Admin</span></a>
         {% endif %}
         <a href="{{ url_for('logout') }}" data-i18n="nav_logout">Deconectare</a>

@@ -371,7 +371,7 @@ def reset_password():
 
 
 @app.route("/test-smtp", methods=["POST"])
-@login_required
+@admin_required
 def test_smtp():
     try:
         settings = SMTPSettings.query.first()
@@ -397,7 +397,7 @@ def test_smtp():
 
 
 @app.route("/smtp", methods=["GET", "POST"])
-@login_required
+@admin_required
 def smtp_settings():
     # Preiau sau creez setările SMTP globale
     # / I fetch or create the global SMTP settings record
@@ -407,11 +407,9 @@ def smtp_settings():
 
     form = SMTPForm()
 
-    is_admin = current_user.is_admin
-
-    # Doar adminul poate salva modificările
-    # / Only admin is allowed to save changes
-    if is_admin and form.validate_on_submit():
+    # Salvare modificări (doar adminii ajung aici datorită @admin_required)
+    # / Save changes (only admins reach here due to @admin_required)
+    if form.validate_on_submit():
         settings.smtp_host = form.smtp_host.data
         try:
             settings.smtp_port = int(form.smtp_port.data) if form.smtp_port.data else 587
@@ -430,20 +428,17 @@ def smtp_settings():
         flash("SMTP settings saved successfully!", "success")
         return redirect(url_for("smtp_settings"))
 
-    # Dacă utilizatorul este admin, populez formularul cu valorile curente
-    # / If admin, I populate the form with the current stored values
-    if is_admin:
-        form.smtp_host.data = settings.smtp_host
-        form.smtp_port.data = str(settings.smtp_port) if settings.smtp_port else "587"
-        form.smtp_username.data = settings.smtp_username
-        form.smtp_password.data = settings.smtp_password
-        form.sender_email.data = settings.sender_email
-        form.sender_name.data = settings.sender_name
-        form.test_email.data = settings.test_email
+    # Populez formularul cu valorile curente
+    # / Populate the form with current stored values
+    form.smtp_host.data = settings.smtp_host
+    form.smtp_port.data = str(settings.smtp_port) if settings.smtp_port else "587"
+    form.smtp_username.data = settings.smtp_username
+    form.smtp_password.data = settings.smtp_password
+    form.sender_email.data = settings.sender_email
+    form.sender_name.data = settings.sender_name
+    form.test_email.data = settings.test_email
 
-    # Dacă userul nu e admin, nu îi arăt valorile adminului — doar instrucțiuni
-    # / If not admin, I hide the real values — show instructions only
-    return render_template("smtp.html", form=form, settings=(settings if is_admin else None), is_admin=is_admin)
+    return render_template("smtp.html", form=form, settings=settings, is_admin=True)
 
 
 @app.route("/profile", methods=["GET", "POST"])
